@@ -64,7 +64,9 @@ class TwoGame extends Game {
                 System.out.println("direction?");
                 dir = scn.next();
                 if(legalMove(p,dir))
-                    movePawn(p,dir);
+                { movePawn(p,dir);
+                 break;
+                }
                 else continue;
 
                 }
