@@ -1,4 +1,3 @@
-
 class Board {
      Cell[][] cells;
      Wall[][] h_walls;
@@ -54,11 +53,20 @@ class Board {
     }
 
 
-    ///----------------
-
 
 }
-//-------
+
+class Cell{
+    char content;
+    boolean isEmpty;
+
+    public Cell() {
+        this.isEmpty = true;
+        content = 'O';
+    }
+}
+
+///----------------------
 class Wall{
     char content;
     boolean isEmpty;
@@ -71,16 +79,8 @@ class Wall{
 
     }
 }
-//------
-class Cell{
-    char content;
-    boolean isEmpty;
 
-    public Cell() {
-        this.isEmpty = true;
-        content = 'O';
-    }
-}
+
 
 
 

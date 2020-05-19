@@ -19,10 +19,12 @@ class TwoGame extends Game {
         p2.setWalls(10);
         this.players[0] = p1;
         this.players[1] = p2;
-        this.board.cells[0][4].content = players[0].pawn;
+
         p1.xPawn = 0; p1.yPawn = 4;
-        this.board.cells[8][4].content = players[1].pawn;
-        p1.xPawn = 8; p1.yPawn = 4;
+        this.board.cells[p1.xPawn][p1.yPawn].content = players[0].pawn;
+        p1.xPawn = 8;
+        this.board.cells[p1.xPawn][p1.yPawn].content = players[1].pawn;
+
         this.gameOver = false;
     }
 
@@ -57,13 +59,15 @@ class TwoGame extends Game {
             int action = scn.nextInt();
 
             if(action == 1){
-                String dir = null;
-                do{
+                String dir;
+                while(true){
                 System.out.println("direction?");
                 dir = scn.next();
+                if(legalMove(p,dir))
                     movePawn(p,dir);
+                else continue;
 
-                }while(!legalMove(p,dir));
+                }
 
             }
             else if(action == 2){
@@ -77,21 +81,21 @@ class TwoGame extends Game {
     private boolean legalMove(Player p, String dir) {
         boolean flag = true;
       if(dir.equals("up")){
-          if(p.xPawn == 0){
+          if(p.xPawn == 0 || this.board.h_walls[p.xPawn-1][p.yPawn].content == '-'){
               flag = false;
           }
 
-      }else if(dir.equals("down")){
+      }else if(dir.equals("down") || this.board.h_walls[p.xPawn][p.yPawn].content == '-'){
           if(p.xPawn == 8){
               flag = false;
           }
       }
-        if(dir.equals("left")){
+        if(dir.equals("left") || this.board.v_walls[p.xPawn][p.yPawn-1].content == '-'){
             if(p.yPawn == 0){
                 flag = false;
             }
 
-        }else if(dir.equals("right")){
+        }else if(dir.equals("right") || this.board.v_walls[p.xPawn][p.yPawn].content == '-'){
             if(p.yPawn == 8){
                 flag = false;
             }
@@ -101,7 +105,24 @@ class TwoGame extends Game {
 
 
     private void movePawn(Player p, String dir) {
-       //todo
+
+        Board alter = new Board();
+        if (dir.equals("up")){
+            p.xPawn--;
+        }
+        else if (dir.equals("down")){
+            p.xPawn++;
+        }
+        else if (dir.equals("left")){
+            p.yPawn--;
+        }
+        else if (dir.equals("right")){
+            p.yPawn++;
+        }
+        alter.cells[p.xPawn][p.yPawn].content = p.pawn;
+
+
+        this.board = alter;
     }
 
 
