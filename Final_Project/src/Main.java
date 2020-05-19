@@ -12,13 +12,26 @@ public class Main {
             Game game = new TwoGame(p1,p2);
             game.board.printBoard();
 
+            //---assuming player one starts
+           String temp = null;
+
+            while(!game.gameOver){
+                System.out.println("A turn");
+                game.play(p1);
+
+                System.out.println("B turn");
+                game.play(p2);
+                temp = game.winCheck();
+            }
+            System.out.println("player"+ temp +" won");
+
         }
 
 
         else{
             Player p3 = new Player('C');
             Player p4 = new Player('D');
-            Game game = new FourGame();
+
         }
 
 
