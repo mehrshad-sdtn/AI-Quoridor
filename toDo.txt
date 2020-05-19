@@ -1,0 +1,9 @@
+to do list----
+
+1.random game start
+
+2. four player mode
+
+3.method for moving pawns
+
+4.method for placing walls
