@@ -46,7 +46,7 @@ class Board {
 
             if(r != 8){
               for (int k = 0; k < h_walls[0].length ; k++) {
-                System.out.print(h_walls[r][k].content+" ");
+                System.out.print(h_walls[r][k].content+"  ");
                  }
             r++;
             }
@@ -63,10 +63,8 @@ class Board {
 
 class Cell{
     char content;
-    boolean isEmpty;
 
     public Cell() {
-        this.isEmpty = true;
         content = 'O';
     }
 }
@@ -74,11 +72,10 @@ class Cell{
 ///----------------------
 class Wall{
     public char content;
-    boolean isEmpty;
     boolean isVertical;
 
     public Wall(boolean isVertical) {
-        this.isEmpty = true;
+
         this.content = ' ';
         this.isVertical = isVertical;
 
