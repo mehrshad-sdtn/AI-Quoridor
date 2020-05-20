@@ -2,4 +2,4 @@ questions---
 1. (file: game.java/class TwoGame) chra umdi unmeghdar dehie pawn haro kardi un shekli? chon unjasho ziad motevajeh nashodm jash tu comment pishnahade khodamo neveshtam barat vase unja 
 2. (file: game.java/class TwoGame) koln tu pawn age dorost code ro fahmide basham bayad havasemun bashe x va y x va y e riazi nistn amalan x baraye shomareye radife va y vaseye shomareye sotun(mese i va j) age dorost fahmide basham( to code i k ezafe kardam k mamulan tu commente bar hamin asas neveshtam age intori nis havasemun bayad behesh basheo taghirate lazemo bedim)
 3. koln bayad az arman bporsm k tu 4 nafare hadafe har mohre khate ruberuishe ya harkodum az azla (k farz kardam khate ruberuishe fln)
-4. how to make it on intellij
+4. how to make it on intellij...
