@@ -54,7 +54,7 @@ class TwoGame extends Game {
 
     }
 
-
+//------method to print the winner's pawn char
     public void printWinner(){
         System.out.println(players[winCheck()].pawn + " won");
     }
@@ -142,7 +142,8 @@ class TwoGame extends Game {
         else if (dir.equals("right")){
             p.yPawn++;
         }
-
+        
+        ///------if the new position is not empty , meaning it contains another pawn 
         if(alter.cells[p.xPawn][p.yPawn].content != 'O'){
             System.out.println("collision");
             //method to handle collision : todo
@@ -172,6 +173,7 @@ class TwoGame extends Game {
         }
     }
 
+    //------checking out of bounds constraint
     private boolean legalPosition(int x, int y){
         return ((x >= 0) && (y >= 0) && (x < 9) && (y < 9));
     }
