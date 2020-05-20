@@ -16,11 +16,15 @@ public class Main {
            String temp = null;
 
             while(!game.gameOver){
-                System.out.println("A turn");
+                for (int i = 0; i < 2; i++) {
+                    System.out.println(game.players[i].pawn+" Turn");
+                    game.play(game.players[i]);
+                }
+               /* System.out.println("A turn");
                 game.play(p1);
 
                 System.out.println("B turn");
-                game.play(p2);
+                game.play(p2);*/
                 temp = game.winCheck();
             }
             System.out.println("player"+ temp +" won");

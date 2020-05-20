@@ -1,9 +1,27 @@
 to do list----
 
-1.random game start
+1.random game start [Done]
+ // generate a random number to make the first and the second player(in 2player) and then reposition player array (sort by turns)
+    [game always play with iterating in array]
 
-2. four player mode
+2. four player mode [Done]
+ //implementing constructor and winning check
 
 3.method for moving pawns
 
 4.method for placing walls
+
+
+notes-----
+1. remember to print board after each player plays.
+2. in 4player game players play in clockWise ( amalan saat gard be surate random chide mishan mohreha va bazi k shoru shod tartibeshun hamun saatgarde) 
+3. check winning position after every single move of player.
+
+
+changes----- mreza
+1. random start in 2player game (in twoGame class and in main class)
+2. first steps of 4player game
+3. shuffleArray method to generate random start in 4 player game
+4. suggesting newType of constructor (in comments)
+5. suggesting new winning check in game.java/twoGame.class
+6. add suggesting winnerCheck in 4Player game

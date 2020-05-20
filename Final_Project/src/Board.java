@@ -40,7 +40,7 @@ class Board {
 
 
 
-                }
+            }
             System.out.println();
             int r = 0;
             for (int k = 0; k < h_walls[0].length ; k++) {
@@ -49,6 +49,8 @@ class Board {
             r++;
             System.out.println();
         }
+        //
+
 
     }
 
