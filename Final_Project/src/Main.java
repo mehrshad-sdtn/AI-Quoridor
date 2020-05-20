@@ -1,6 +1,6 @@
 import java.util.*;
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner input = new Scanner(System.in);
         System.out.println("enter number of players: 2 or 4");
         int num = input.nextInt();

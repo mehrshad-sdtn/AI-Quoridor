@@ -1,7 +1,10 @@
+import java.util.ArrayList;
+
 class Board {
     Cell[][] cells;
     Wall[][] h_walls;
     Wall[][] v_walls;
+
 
 
     public Board() {
