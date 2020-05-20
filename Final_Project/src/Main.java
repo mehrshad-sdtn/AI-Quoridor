@@ -13,21 +13,19 @@ public class Main {
             game.board.printBoard();
 
             //---assuming player one starts
-           String temp = null;
+           int temp = 0;
 
             while(!game.gameOver){
-                for (int i = 0; i < 2; i++) {
-                    System.out.println(game.players[i].pawn+" Turn");
-                    game.play(game.players[i]);
-                }
-               /* System.out.println("A turn");
+                System.out.println("A turn");
                 game.play(p1);
+                game.board.printBoard();
 
                 System.out.println("B turn");
-                game.play(p2);*/
+                game.play(p2);
+                game.board.printBoard();
                 temp = game.winCheck();
             }
-            System.out.println("player"+ temp +" won");
+            game.printWinner();
 
         }
 
