@@ -65,13 +65,13 @@ class FourGame extends Game {
 
     @Override
     public boolean legalPosition(int x, int y) {
-        // TODO: 5/21/2020  
-        return false;
+        return ((x >= 0) && (y >= 0) && (x < 9) && (y < 9)); //in ba 2playeresh farghi dare? (ziad nafahmidm bara chi tarifesh krdi) age farghi nadare k bebar tu game.class
+
     }
 
     @Override
     public boolean legalMove(Player p, String dir) {
-        // TODO: 5/21/2020  
+        // TODO: 5/21/2020
         return false;
     }
 

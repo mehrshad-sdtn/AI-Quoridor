@@ -5,7 +5,7 @@ abstract class Game {
     boolean gameOver;
 
     public abstract int winCheck();
-    public abstract boolean legalPosition ( int x, int y);
+    public abstract boolean legalPosition ( int x, int y); //it can be the same for 2 and 4 player
     public abstract boolean legalMove(Player p, String dir);
 
     public void play(Player p) throws Exception {
@@ -37,7 +37,8 @@ abstract class Game {
             System.out.println("vertical or horizontal? [v/h]");
             char type = scn.next().charAt(0);
 
-                 System.out.println("where do yo want to place the wall? {enter index of x,y?}");
+                 System.out.println("where do yo want to place the wall? {enter index of x,y?} ");
+                 System.out.println("(it should be between 0 and 6 cause walls length is 2)");
                  int x = scn.nextInt();
                  int y = scn.nextInt();
 

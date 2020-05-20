@@ -16,8 +16,5 @@ notes-----
 
 
 changes----- mreza
-1. random start in 2player game (in twoGame class and in main class) (akahr sar okeyesh miknim alan dastan mishe)
-2. first steps of 4player game 
-3. shuffleArray method to generate random start in 4 player game
-4. suggesting newType of constructor (in comments) 
+1. legalPosition in 4 player (add a comment)
 
