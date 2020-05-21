@@ -10,7 +10,7 @@ public class Human extends Player{
     public void play(State state) {
         try{
         Scanner input = new Scanner(System.in);
-        System.out.println(this.pawn.symbol+" turn: \n1.move pawn\n2.place a wall");
+        System.out.println(this.symbol+" turn: \n1.move pawn\n2.place a wall");
         int code = input.nextInt();
         if(code == 1){
             System.out.println("enter the direction [up/down/left/right]");
@@ -60,27 +60,40 @@ public class Human extends Player{
         char temp = this.pawn.symbol;
          state.board[pos_x][pos_y].setSymbol('o');
 
+        changePosition(dir);
+
+        if(state.board[pos_x][pos_y].symbol != 'o'){
+            System.out.println("collision");
+            changePosition(dir);
+        }
+
+        if(inBounds(state , pos_x , pos_y))
+           state.board[pos_x][pos_y].setSymbol(temp);
+
+
+    }
+
+
+
+    //------------------------------->method for changing the indexes of current pawn position
+    private void changePosition(String dir) {
         switch (dir) {
             case "up":
-                this.pos_x--;
+                this.pos_x-=2;
                 break;
 
             case "down":
-                this.pos_x++;
+                this.pos_x+=2;
                 break;
 
             case "left":
-                this.pos_y--;
+                this.pos_y-=2;
                 break;
 
             case "right":
-                this.pos_y++;
+                this.pos_y+=2;
                 break;
         }
-
-        state.board[pos_x][pos_y].setSymbol(temp);
-
-
     }
 
 

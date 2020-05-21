@@ -3,8 +3,7 @@ import java.util.*;
 
 public class TwoGame extends Game {
 
-
-
+    
     public TwoGame(Player player1, Player player2) {
         super();
         this.pawns = new Pawn[2];
@@ -28,7 +27,7 @@ public class TwoGame extends Game {
             players[i].pos_x = 16;
 
         players[i].pos_y = 8;
-        this.state.board[players[i].pos_x][players[i].pos_y] = pawns[i];
+        this.state.board[players[i].pos_x][players[i].pos_y].symbol = players[i].symbol;
 
         if(i==0)
           players[i].goal = 16; //---> setting the goal for the player
