@@ -4,6 +4,8 @@ questions---
         emkan dare tu place kardan INDEX OUT OF BOUND bede chon tu place wall faghat umde check karde k wall untu has ya na. ino bbin tu code baresi
         krdi ya na.
 
+-------------------->khodet ok krdi dg, un beyne 0-6 bshe okeyesh mkne 
+
         >> Solution: age didi emkan dare in etefagh biofte kari k mishe kard ye legalWallPosition bzanim ba sgn: boolean legalWallPosition (int x, int y, char syn)
         k biad check kone masalan tu vWall indexe ma bayad in shekli bashe hatman: 0 <= x < 8 && 0 < y < 7 (chon tu codet tu position o position + 1 mizashti
         bara hWall ham hamintori amal kone!
