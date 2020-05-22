@@ -12,6 +12,8 @@ public class State {
 
     }
 
+
+
     public void initBoard(){
         for (int i = 0; i < 17 ; i++) {
             for (int j = 0; j < 17 ; j++) {

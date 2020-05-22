@@ -7,11 +7,14 @@ public class TwoGame extends Game {
     public TwoGame(Player player1, Player player2) {
         super();
         this.pawns = new Pawn[2];
-        this.players = new Player[2];
-        this.players[0] = player1;
-        this.players[1] = player2;
+        players = new Player[2];
+        players[0] = player1;
+        players[1] = player2;
         pawns[0] = players[0].pawn;
         pawns[1] = players[1].pawn;
+
+        players[0].setMax_pawns(10);
+        players[1].setMax_pawns(10);
 
         state.initBoard();
         //------->putting pawns on the board to start the game

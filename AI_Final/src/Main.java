@@ -20,15 +20,12 @@ public class Main {
             Player player1 = new Human();
             Player player2 = new Human();
             //-------player 1 creation
-            System.out.println("player "+1+" enter yor pawn");
-            char ch = input.next().charAt(0);
-            Pawn pawn = new Pawn(ch);
+            Pawn pawn;
+            pawn = new Pawn('R');
             player1.setPawn(pawn);
 
             //--------player 2 creation
-            System.out.println("player "+2+" enter yor pawn");
-            ch = input.next().charAt(0);
-            pawn = new Pawn(ch);
+            pawn = new Pawn('Y');
             player2.setPawn(pawn);
             //-------------------
             TwoGame game = new TwoGame(player1,player2);
@@ -41,9 +38,32 @@ public class Main {
 
 
 
+
         }
         else if (modeNum == 2){
 
+            Player player1 = new Human();
+            Player player2 = new Human();
+            Player player3 = new Human();
+            Player player4 = new Human();
+
+            Pawn pawn;
+            pawn = new Pawn('R');
+            player1.setPawn(pawn);
+
+            pawn = new Pawn('Y');
+            player2.setPawn(pawn);
+
+            pawn = new Pawn('G');
+            player3.setPawn(pawn);
+
+            pawn = new Pawn('B');
+            player4.setPawn(pawn);
+            //-------------------
+            FourGame game = new FourGame(player1, player2, player3, player4);
+
+            game.displayBoard();
+            game.startGame();
         }
 
     }
