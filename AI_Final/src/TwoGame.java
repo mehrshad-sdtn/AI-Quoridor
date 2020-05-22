@@ -3,7 +3,7 @@ import java.util.*;
 
 public class TwoGame extends Game {
 
-    
+
     public TwoGame(Player player1, Player player2) {
         super();
         this.pawns = new Pawn[2];

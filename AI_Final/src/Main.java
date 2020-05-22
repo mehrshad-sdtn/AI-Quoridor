@@ -1,5 +1,14 @@
 import java.util.*;
 public class Main {
+    /*----
+    note:
+   in board array:
+   [odd][even] --> horizontal wall place
+   [even][odd] --> vertical wall place
+   [even][even] --> pawn place
+   [odd][odd] --> nothing (+)
+
+    ----- */
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         System.out.println("welcome to the quoridor");
