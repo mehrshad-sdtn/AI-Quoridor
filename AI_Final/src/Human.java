@@ -25,17 +25,16 @@ public class Human extends Player {
                     System.out.println("you can get past a wall");
                 }
             } else if (code == 2) {
-                System.out.println("enter the wall position [x&y]");
-                int x = input.nextInt();
-                int y = input.nextInt();
+                  if(this.max_walls > 0){
+                      System.out.println("enter the wall position [x&y]");
+                      int x = input.nextInt();
+                      int y = input.nextInt();
 
-                    placeWall(state, x, y);
+                      placeWall(state, x, y);
+                }else
+                      System.err.println("no walls left");
 
             }
-
-
-
-
 
 
 
@@ -46,7 +45,6 @@ public class Human extends Player {
 
 
     }
-
 
 
 

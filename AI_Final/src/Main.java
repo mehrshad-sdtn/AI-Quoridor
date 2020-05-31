@@ -11,9 +11,10 @@ public class Main {
     ----- */
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        System.out.println("welcome to the quoridor");
+        System.out.println("welcome to the Quoridor");
         System.out.println("select mode: \n1. 2-player game \n2. 4-player game");
         int modeNum = input.nextInt();
+
 
 
         if(modeNum == 1){
@@ -32,8 +33,6 @@ public class Main {
 
             game.displayBoard();
             game.startGame();
-
-
 
 
 

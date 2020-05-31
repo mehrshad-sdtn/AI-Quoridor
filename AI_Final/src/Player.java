@@ -3,7 +3,7 @@ abstract class Player {
     public int goal; //-->index of the goal
     public String goalType; //-->row or column
     char symbol;
-    int max_pawns;
+    int max_walls;
     int pos_x;
     int pos_y;
 
@@ -13,8 +13,8 @@ abstract class Player {
         this.symbol = pawn.symbol;
     }
 
-    public void setMax_pawns(int max_pawns) {
-        this.max_pawns = max_pawns;
+    public void setMax_walls(int max_walls) {
+        this.max_walls = max_walls;
     }
 
     public abstract void play(State state);
@@ -62,13 +62,14 @@ abstract class Player {
             if ((x % 2 == 1 && y % 2 == 0) && inBounds(state, x, y) && inBounds(state, x, y + 2)) {
                 GameObject h_wall = new Wall();
                 h_wall.setSymbol('#');
-                if(state.board[x][y].symbol == ' '){
-                    state.board[x][y] = h_wall;
-                    state.board[x][y + 2] = h_wall;
-                    this.max_pawns--;
-                }else{
-                    System.out.println("a wall already exists");
-                }
+
+                   if(state.board[x][y].symbol == ' '){
+                       state.board[x][y] = h_wall;
+                       state.board[x][y + 2] = h_wall;
+                       this.max_walls--;
+                   }else{
+                      System.out.println("a wall already exists");
+                    }
             }
             //----->vertical wall
             else if ((x % 2 == 0 && y % 2 == 1) && inBounds(state, x, y) && inBounds(state, x + 2, y )) {
@@ -77,7 +78,7 @@ abstract class Player {
                 if(state.board[x][y].symbol == ' '){
                     state.board[x][y] = v_wall;
                     state.board[x + 2][y] = v_wall;
-                    this.max_pawns--;
+                    this.max_walls--;
                 }
                 else{
                     System.out.println("a wall already exists");

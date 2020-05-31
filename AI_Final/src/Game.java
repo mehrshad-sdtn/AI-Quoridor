@@ -6,7 +6,7 @@ abstract class Game {
     Queue<Player> gameTurn;
     boolean gameOver;
     State state; //---->current stack
-    static Stack<State> memory; //-->keeping past states in the stack
+    Stack<char[][]> memory; //-->keeping past states in the stack
     Player winner;
 
     public Game() {
@@ -19,11 +19,17 @@ abstract class Game {
     public void startGame() {
         randomAdd();
 
+
         while(!gameOver && !gameTurn.isEmpty()) {
 
             Player p = gameTurn.poll(); ///----------->poll the front player of the queue
-            memory.push(state); ///------> push the current state into the memory
-            p.play(this.state); //------->change the current state by playing
+            memory.push(this.state.extractArray()); ///------> push the current state array into the memory
+
+            p.play(state); //------->change the current state by playing
+
+
+            //----------------------------------
+
             if(winCheck())
             {
                 winner = p;
@@ -46,7 +52,7 @@ abstract class Game {
     //---->this method randomly chooses one player to start and adds the rest (clock-wise) to the queue
     private void randomAdd() {
         Random rand = new Random();
-        int toStart = rand.nextInt(2);
+        int toStart = rand.nextInt(players.length);
         int temp = toStart;
 
         this.gameTurn.add(players[toStart]);
@@ -85,19 +91,19 @@ abstract class Game {
     public void displayBoard(){
 
         for (int i = 0; i < 17 ; i++) {
-            System.out.print("##");
+            System.out.print("###");
         }
         System.out.println();
 
         for (int i = 0; i < 17 ; i++) {
             for (int j = 0; j < 17; j++) {
-                System.out.print(state.board[i][j].symbol+" ");
+                System.out.print(state.board[i][j].symbol+"  ");
             }
             System.out.println();
         }
 
         for (int i = 0; i < 17 ; i++) {
-            System.out.print("##");
+            System.out.print("###");
         }
         System.out.println();
 
@@ -109,4 +115,7 @@ abstract class Game {
 
 
 
-}
+
+
+
+}//end class

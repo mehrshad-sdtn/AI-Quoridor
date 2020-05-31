@@ -13,10 +13,10 @@ public class FourGame extends Game {
         pawns[2] = players[2].pawn;
         pawns[3] = players[3].pawn;
 
-        players[0].setMax_pawns(5);
-        players[1].setMax_pawns(5);
-        players[2].setMax_pawns(5);
-        players[3].setMax_pawns(5);
+        players[0].setMax_walls(5);
+        players[1].setMax_walls(5);
+        players[2].setMax_walls(5);
+        players[3].setMax_walls(5);
 
         state.initBoard();
         //------->putting pawns on the board to start the game

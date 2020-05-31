@@ -12,6 +12,18 @@ public class State {
 
     }
 
+    public State(char[][] array) {
+        this.board = new GameObject[17][17];
+        for (int i = 0; i < 17; i++) {
+            for (int j = 0; j < 17; j++) {
+                board[i][j] = new GameObject();
+                board[i][j].symbol = array[i][j];
+
+            }
+        }
+
+    }
+
 
 
     public void initBoard(){
@@ -28,4 +40,15 @@ public class State {
             }
         }
     }
-}
+
+   public char[][] extractArray(){
+        char[][] array = new char[17][17];
+       for (int i = 0; i < 17; i++) {
+           for (int j = 0; j < 17; j++) {
+               array[i][j] = this.board[i][j].symbol;
+           }
+       }
+       return array;
+   }
+
+}//end class
