@@ -6,6 +6,7 @@ abstract class Player {
     int max_walls;
     int pos_x;
     int pos_y;
+    static boolean trapHandler;
 
 
     public void setPawn(Pawn pawn) {
@@ -57,33 +58,44 @@ abstract class Player {
     ///----------->method to place the wall at index [x][y]
     protected void placeWall(State state, int x, int y) {
 
-        try{
+        try {
+
             //----> horizontal wall
             if ((x % 2 == 1 && y % 2 == 0) && inBounds(state, x, y) && inBounds(state, x, y + 2)) {
                 GameObject h_wall = new Wall();
                 h_wall.setSymbol('#');
 
-                   if(state.board[x][y].symbol == ' '){
-                       state.board[x][y] = h_wall;
-                       state.board[x][y + 2] = h_wall;
-                       this.max_walls--;
-                   }else{
-                      System.out.println("a wall already exists");
+                if (state.board[x][y].symbol == ' ') {
+                    if(legalWall(state , x , y)) {
+                        state.board[x][y] = h_wall;
+                        state.board[x][y + 2] = h_wall;
+                        this.max_walls--;
+                    }else{
+                        System.err.println("ILLEGAL WALL");
                     }
-            }
-            //----->vertical wall
-            else if ((x % 2 == 0 && y % 2 == 1) && inBounds(state, x, y) && inBounds(state, x + 2, y )) {
-                GameObject v_wall = new Wall();
-                v_wall.setSymbol('|');
-                if(state.board[x][y].symbol == ' '){
-                    state.board[x][y] = v_wall;
-                    state.board[x + 2][y] = v_wall;
-                    this.max_walls--;
-                }
-                else{
+
+                } else {
                     System.out.println("a wall already exists");
                 }
             }
+            //----->vertical wall
+            else if ((x % 2 == 0 && y % 2 == 1) && inBounds(state, x, y) && inBounds(state, x + 2, y)) {
+                GameObject v_wall = new Wall();
+                v_wall.setSymbol('|');
+                if (state.board[x][y].symbol == ' ') {
+                    if(legalWall(state , x , y)) {
+                       state.board[x][y] = v_wall;
+                       state.board[x + 2][y] = v_wall;
+                       this.max_walls--;
+                    }else{
+                        System.err.println("ILLEGAL WALL");
+                    }
+
+                } else {
+                    System.out.println("a wall already exists");
+                }
+            }
+
         }catch(ArrayIndexOutOfBoundsException ex)
         { System.out.println("out of bounds error");}
 
@@ -93,6 +105,95 @@ abstract class Player {
 
 
     }
+
+    private boolean legalWall(State state, int x, int y) {
+        char[][] temp = new char[17][17];
+        boolean flag = true;
+
+       state.arrayCopy(temp);
+        if(x%2 == 0 && y%2 == 1) {
+            temp[x][y] = '|';
+            temp[x + 2][y] = '|';
+
+        }
+        else if(x%2 == 1 && y%2 == 0) {
+            temp[x][y] = '#';
+            temp[x][y + 2] = '#';
+        }
+        char[][] backup = new char[17][17];
+        for (int i = 0; i < 17 ; i++) {
+            System.arraycopy(temp[i], 0, backup[i], 0, 17);
+        }
+
+        for (var p: Game.players) {
+
+            for (int i = 0; i < 17 ; i++) {
+                System.arraycopy(backup[i], 0, temp[i], 0, 17);
+            }
+            trapHandler = false;
+            canReachGoal(p, temp , p.pos_x , p.pos_y);
+           if(!trapHandler)
+            { flag =  false; break;}
+        }
+
+        return flag;
+
+    }
+    public void canReachGoal(Player p, char[][] arr, int x, int y){
+
+
+        if(p.goalType.equals("row")){
+
+            if(x == p.goal){
+               
+               trapHandler =  true;
+
+            }else{
+                //-----down
+                arr[x][y] = 'x';
+                if(inRange(x + 2 , y)){
+
+                    if(arr[x+2][y]!= 'x'  && arr[x+1][y] != '#'){
+                        canReachGoal(p, arr , x+2 , y);
+                    }
+                }
+              //----up
+                if(inRange(x - 2 , y)){
+
+                    if(arr[x-2][y]!= 'x'  && arr[x-1][y] != '#'){
+                     canReachGoal(p, arr , x-2 , y);
+                    }
+                }
+
+                //----right
+                if(inRange(x , y + 2)){
+
+                    if(arr[x][y+2]!= 'x'  && arr[x][y+1] != '|'){
+                        canReachGoal(p, arr , x , y+2);
+                    }
+                }
+
+                //--left
+                if(inRange(x , y - 2)){
+
+                    if(arr[x][y-2]!= 'x'  && arr[x][y-1] != '|'){
+                        canReachGoal(p, arr , x , y-2);
+                    }
+                }
+
+
+
+            }
+
+
+        }///row goal
+
+
+
+    }
+
+
+
 
 
     //----------------------------------------------------
@@ -171,6 +272,9 @@ abstract class Player {
                 this.pos_y+= 2;
                 break;
         }
+    }
+    public boolean inRange(int x,int y){
+        return (x>=0 && y>=0) && (x<17 && y<17);
     }
 
 

@@ -22,7 +22,7 @@ public class Human extends Player {
                     movePawn(state, dir);
                 }
                 else{
-                    System.out.println("you can get past a wall");
+                    System.err.println("you can get past a wall");
                 }
             } else if (code == 2) {
                   if(this.max_walls > 0){

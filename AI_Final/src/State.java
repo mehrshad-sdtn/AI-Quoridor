@@ -51,4 +51,13 @@ public class State {
        return array;
    }
 
+
+   public void arrayCopy(char[][] copyTo){
+       for (int i = 0; i < 17; i++) {
+           for (int j = 0; j < 17; j++) {
+               copyTo[i][j] = this.board[i][j].symbol;
+           }
+       }
+   }
+
 }//end class

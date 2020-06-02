@@ -12,6 +12,11 @@ public class AI extends Player {
     }
 
     public int hEval(State state){
-        return 0;
+        int h = 0;
+      if(goalType.equals("row")){
+         h = h +(2 * (Math.abs(goal - pos_x)));
+
+      }
+      return h;
     }
-}
+}//class end

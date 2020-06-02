@@ -14,7 +14,7 @@ public class TwoGame extends Game {
         pawns[1] = players[1].pawn;
 
         players[0].setMax_walls(10);
-        players[1].setMax_walls(1);
+        players[1].setMax_walls(10);
 
         state.initBoard();
         //------->putting pawns on the board to start the game
