@@ -145,7 +145,7 @@ abstract class Player {
         if(p.goalType.equals("row")){
 
             if(x == p.goal){
-               
+
                trapHandler =  true;
 
             }else{

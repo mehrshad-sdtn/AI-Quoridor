@@ -90,32 +90,35 @@ abstract class Game {
 
     public void displayBoard(){
 
-        for (int i = 0; i < 17 ; i++) {
-            System.out.print("###");
-        }
-        System.out.println();
+        style();
 
         for (int i = 0; i < 17 ; i++) {
+            if(i>9)
+            System.out.print(i+"| ");
+            else System.out.print(i+" | ");
             for (int j = 0; j < 17; j++) {
                 System.out.print(state.board[i][j].symbol+"  ");
             }
-            System.out.println();
+            System.out.println("|");
         }
 
-        for (int i = 0; i < 17 ; i++) {
-            System.out.print("###");
-        }
-        System.out.println();
+        style();
 
     }
 
-
-
-
-
-
-
-
+    //-------handles the way numbers around the board are shown----
+    private void style() {
+        for (int i = 0; i < 17 ; i++) {
+            if(i==0)
+                System.out.print("    ");
+            if(i<9)
+                System.out.print(i+"  ");
+            else if(i==9)
+                System.out.print(i+"");
+            else System.out.print(" "+i+"");
+        }
+        System.out.println();
+    }
 
 
 }//end class
