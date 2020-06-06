@@ -7,6 +7,7 @@ public class Quoridor {
     Player winner;
     Stack<char[][]> memory;
     boolean trapped;
+    boolean possible;
 
 
     public Quoridor(Player p1 , Player p2) {
@@ -63,7 +64,7 @@ public class Quoridor {
             for (int j = 0; j < 17; j++) {
                 System.out.print(board[i][j]+"   ");
             }
-            System.out.println();
+            System.out.println("|");
         }
         System.out.print(" ");
         for (int i = 0; i < 17; i++) {
@@ -78,15 +79,17 @@ public class Quoridor {
 
     //-------------------------method for playing the game
     public void play(){
-        String move = null;
+        String move;
 
         while(!gameOver){
 
+
             System.out.println(players[0].pawn+"'s turn , "+players[0].walls+" left");
             try{
-               move = players[0].getMove();
-               makeMove(move , players[0]);
-               memorize();
+
+                move = players[0].getMove();
+                makeMove(move , players[0]);
+
 
             }catch(InputMismatchException ex){
                 System.err.println("wrong input");
@@ -102,9 +105,10 @@ public class Quoridor {
 
             System.out.println(players[1].pawn+"'s turn , "+players[1].walls+" left");
             try{
+
                 move = players[1].getMove();
                 makeMove(move , players[1]);
-                memorize();
+
 
             }catch(InputMismatchException ex){
                 System.err.println("wrong input");
@@ -130,8 +134,12 @@ public class Quoridor {
         if(arr[0].equals("1")){
             String dir = arr[1].trim();
             if(allowed(dir , p)){
+                possible = true;
+                memorize();
                 movePawn(dir , p);
             }else{
+                possible = false;
+                if(!(p instanceof AI))
                 System.err.println("illegal move");
             }
         }
@@ -140,10 +148,15 @@ public class Quoridor {
             String[] str = arr[1].trim().split("&");
             int x = Integer.parseInt(str[0]);
             int y = Integer.parseInt(str[1]);
-            if(legalWall(x , y)){
+            if(legalWall(x , y) && p.walls > 0){
+                possible = true;
+                memorize();
                 placeWall(x , y);
+                if(!(p instanceof AI))
                 p.walls--;
             }else{
+                possible = false;
+                if(!(p instanceof AI))
                 System.err.println("illegal wall");
             }
 
@@ -182,9 +195,7 @@ public class Quoridor {
                     flag = true;
             }
         }
-        else {
-            System.out.println("invalid wall coordinates");
-        }
+
         if(traps(x , y)){
             flag = false;
         }
@@ -203,12 +214,12 @@ public class Quoridor {
         for (int i = 0; i < 17; i++) {
             System.arraycopy(board[i], 0, copy[i], 0, 17);
         }
-        if(x%2 == 0 && y%2 == 1) {
+        if(x%2 == 0 && y%2 == 1 && inRange(x+2 , y)) {
             copy[x][y] = '#';
             copy[x + 2][y] = '#';
 
         }
-        else if(x%2 == 1 && y%2 == 0) {
+        else if(x%2 == 1 && y%2 == 0 && inRange(x , y+2)) {
             copy[x][y] = '#';
             copy[x][y + 2] = '#';
         }
@@ -263,6 +274,7 @@ public class Quoridor {
 
    //------------------------------------------------------
     private void movePawn(String dir, Player p) {
+        try{
         switch (dir) {
             case "up":
                 board[p.x][p.y] = 'o';
@@ -322,6 +334,10 @@ public class Quoridor {
                 board[p.x][p.y] = p.pawn;
                 break;
         }
+        }catch(ArrayIndexOutOfBoundsException ex){
+            if(!(p instanceof AI))
+            System.err.println("move index out of bounds");
+        }
     }
 
 
@@ -331,7 +347,7 @@ public class Quoridor {
     //choosing alternative move for collision with wall behind
     private void alternateMove(Player p , String dir) {
         Scanner input = new Scanner(System.in);
-        String alt = null;
+        String alt;
         if(dir.equals("up")){
             System.out.println("the move is unavailable select an alternate [upleft / upright]");
            alt = input.next();
@@ -448,14 +464,38 @@ public class Quoridor {
     }
 
     public void undo(){
+
+        if(!memory.isEmpty()){
         char[][] top = memory.pop();
+        for (int i = 0; i <17 ; i++) {
+            for (int j = 0; j <17 ; j++) {
+                if(top[i][j] == players[0].pawn){
+                    players[0].x = i;
+                    players[0].y = j;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i <17 ; i++) {
+            for (int j = 0; j <17 ; j++) {
+                if(top[i][j] == players[1].pawn){
+                    players[1].x = i;
+                    players[1].y = j;
+                    break;
+                }
+            }
+        }
         for (int i = 0; i < 17; i++) {
             System.arraycopy(top[i], 0, board[i], 0, 17);
-        }
+          }
+
+        }//outer condition brace
+
+
     }
 
 
-    public boolean inRange(int x,int y){
+    public static boolean inRange(int x,int y){
         return (x>=0 && y>=0) && (x<17 && y<17);
     }
 }

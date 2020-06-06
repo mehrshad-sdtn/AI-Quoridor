@@ -17,11 +17,23 @@ public class Main {
         }
 
         else if(mode == 2){
-            System.out.println("AI mode");
+            Player p1 = new Human('A');
+            AI p2 = new AI('B');
+            Quoridor game = new Quoridor(p1 , p2);
+            p2.setGame(game);
+            game.printBoard();
+            game.play();
         }
 
         else if(mode == 3){
             Player p1 = new Human('A');
+            Player p2 = new RandomPlayer('B');
+            Quoridor game = new Quoridor(p1 , p2);
+            game.printBoard();
+            game.play();
+        }
+        else{
+            Player p1 = new RandomPlayer('A');
             Player p2 = new RandomPlayer('B');
             Quoridor game = new Quoridor(p1 , p2);
             game.printBoard();

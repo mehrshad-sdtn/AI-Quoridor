@@ -1,0 +1,27 @@
+for (int i = 0; i <17 ; i++) {
+            for (int j = 0; j <17 ; j++) {
+             //do
+            }
+        }
+
+        //undo check
+        System.out.println("undo?");
+                    Scanner input = new Scanner(System.in);
+                    String response = input.next();
+                    if(response.equals("yes")) undo();
+                    //-----------------------------------------------------------
+                     System.out.println("----");
+                                for (int i = 0; i <17 ; i++) {
+                                    for (int j = 0; j <17 ; j++) {
+                                        System.out.print(copy[i][j]);
+                                    }
+                                    System.out.println();
+                                }
+                                //---------------------------------------
+                                System.out.println("----");
+                                                            for (int u = 0; u <17 ; u++) {
+                                                                    for (int v = 0; v <17 ; v++) {
+                                                                        System.out.print(copy[u][v]);
+                                                                    }
+                                                                    System.out.println();
+                                                                }
