@@ -1,4 +1,7 @@
+import javax.print.attribute.standard.MediaSize;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Quoridor {
     char[][] board;
@@ -199,14 +202,24 @@ public class Quoridor {
 
         if(x % 2 == 0 && y % 2 == 1){
             if(inRange(x , y) && inRange(x + 2 , y)) {
-                if(board[x][y] != '#' && board[x+2][y] != '#')
-                    flag = true;
+                if(board[x][y] != '#' && board[x+2][y] != '#') {
+                    if(inRange(x , y - 1) && inRange(x , y + 1)) {
+
+                        if (board[x + 1][y - 1] != '#' && board[x + 1][y + 1] != '#')
+                            flag = true;
+                    }
+
+                }
             }
         }
         else if(x % 2 == 1 && y % 2 == 0){
             if(inRange(x , y) && inRange(x , y + 2)){
-                if(board[x][y] != '#' && board[x][y+2] != '#')
-                    flag = true;
+                if(board[x][y] != '#' && board[x][y+2] != '#') {
+                    if(inRange(x - 1, y) && inRange(x + 1, y )){
+                       if (board[x - 1][y + 1] != '#' && board[x + 1][y + 1] != '#')
+                          flag = true;
+                    }
+                }
             }
         }
 
@@ -347,7 +360,7 @@ public class Quoridor {
                 break;
         }
         }catch(ArrayIndexOutOfBoundsException ex){
-            if(!(p instanceof AI))
+            if(!simulating)
             System.err.println("move index out of bounds");
         }
     }
@@ -356,8 +369,10 @@ public class Quoridor {
     //choosing alternative move for collision with wall behind
     private void alternateMove(Player p , String dir) {
         Scanner input = new Scanner(System.in);
-        String alt;
-        if(dir.equals("up")){
+
+        if(!simulating){
+            String alt;
+           if(dir.equals("up")){
             System.out.println("the move is unavailable select an alternate [upleft / upright]");
            alt = input.next();
             if(alt.equals("upleft")){
@@ -374,7 +389,7 @@ public class Quoridor {
             }
 
         }
-        else if(dir.equals("down")){
+           else if(dir.equals("down")){
             System.out.println("the move is unavailable select an alternate [downleft / downright]");
             alt = input.next();
             if(alt.equals("downleft")){
@@ -390,7 +405,7 @@ public class Quoridor {
                 board[p.x][p.y] = p.pawn;
             }
         }
-        else if(dir.equals("left")){
+           else if(dir.equals("left")){
             System.out.println("the move is unavailable select an alternate [leftup/leftdown]");
             alt = input.next();
             if(alt.equals("leftup")){
@@ -406,7 +421,7 @@ public class Quoridor {
                 board[p.x][p.y] = p.pawn;
             }
         }
-        else if(dir.equals("right")){
+           else if(dir.equals("right")){
             System.out.println("the move is unavailable select an alternate [rightup/rightdown]");
             alt = input.next();
             if(alt.equals("rightup")){
@@ -420,6 +435,69 @@ public class Quoridor {
                 p.x = p.x + 2;
                 p.y = p.y + 2;
                 board[p.x][p.y] = p.pawn;
+            }
+        }
+        }
+        else{
+            Random rnd = new Random();
+            int choice = rnd.nextInt(2);
+            if(dir.equals("up")){
+                if(choice == 0){
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x - 2;
+                    p.y = p.y - 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+                else {
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x - 2;
+                    p.y = p.y + 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+
+            }
+            else if(dir.equals("down")){
+                if(choice == 0){
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x + 2;
+                    p.y = p.y - 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+                else {
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x + 2;
+                    p.y = p.y + 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+            }
+            else if(dir.equals("left")){
+                if(choice == 0){
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x - 2;
+                    p.y = p.y - 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+                else{
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x + 2;
+                    p.y = p.y - 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+            }
+            else if(dir.equals("right")){
+                if(choice == 0){
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x - 2;
+                    p.y = p.y + 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+                else{
+                    board[p.x][p.y] = 'o';
+                    p.x = p.x + 2;
+                    p.y = p.y + 2;
+                    board[p.x][p.y] = p.pawn;
+                }
+
             }
         }
     }
@@ -503,11 +581,10 @@ public class Quoridor {
     }
 
 
-    public List<String> findAvailableMoves(Player player){
-
+    public Set<String> findAvailableMoves(Player player){
 
         StringBuilder move = null;
-        List<String> availableMoves = new ArrayList<>();
+        Set<String> availableMoves = new TreeSet<>();
 
         //----pawn
         move = new StringBuilder("1:");
@@ -528,9 +605,8 @@ public class Quoridor {
             //-----------wall
 
             move = new StringBuilder("2:");
-            for (int i = 0; i < 17; i++) {
-                for (int j = 0; j < 17; j++) {
-
+            for (int i = 0; i < 16; i++) {
+                for (int j = 1; j < 16; j++) {
 
                     if((i%2 == 0 && j%2 == 1)||(i%2 == 1 && j%2 == 0)){
                         move.append(i).append("&").append(j);
@@ -545,8 +621,84 @@ public class Quoridor {
                 }
             }
 
+            filter(availableMoves , player);
 
             return availableMoves;
+
+    }
+
+
+    private void filter(Set<String> set , Player player) {
+        Player other = null;
+        for (var element : players) {
+            if(element.pawn!=player.pawn)
+            {other = element; break;}
+        }
+
+        Iterator<String> itr = set.iterator();
+
+
+        System.out.println("before"+set.size());
+           while(itr.hasNext()) {
+               String value = itr.next();
+
+               if(player instanceof AI){
+                  if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) < other.x)
+                    {
+
+                        itr.remove();
+
+                    }
+                 /* if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) == player.x - 1)
+                  {
+                      itr.remove();
+
+                  }*/
+
+               }
+               if(player instanceof Human){
+                   if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) > other.x)
+                   {
+                       itr.remove();
+
+                   }
+                 /*  if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) == player.x + 1)
+                   {
+                       itr.remove();
+
+                   }*/
+               }
+
+
+           }
+
+
+        itr = set.iterator();
+        while(itr.hasNext()) {
+            String value = itr.next();
+            if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[1]) < player.y + 1 ||
+                    value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[1]) < player.y - 1)
+            {
+
+                itr.remove();
+
+            }
+        }
+
+        itr = set.iterator();
+        while(itr.hasNext()) {
+            String value = itr.next();
+            if(value.startsWith("2") && Math.abs(Integer.parseInt(value.split(":")[1].split("&")[1]) - other.y) > 6
+                    || value.startsWith("2") && Math.abs(Integer.parseInt(value.split(":")[1].split("&")[0]) - other.x) > 6 )
+            {
+                itr.remove();
+
+            }
+        }
+
+
+        System.out.println("after"+set.size());
+
 
     }
 

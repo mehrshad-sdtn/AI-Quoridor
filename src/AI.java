@@ -17,7 +17,9 @@ public class AI extends Player {
 
 
     public String getMove() {
-        String[] result = miniMax(2 , true);
+        var a = Double.NEGATIVE_INFINITY;
+        var b = Double.POSITIVE_INFINITY;
+        String[] result = miniMax(5 , a , b , true);
 
         System.out.println(result[1]);
         System.out.println("move: "+ result[0]);
@@ -26,13 +28,18 @@ public class AI extends Player {
     }
 
     //[0]: move //[1]:score
-   public String[] miniMax(int depth , boolean isMax) {
+   public String[] miniMax(int depth ,double alpha , double beta , boolean isMax) {
 
-       List<String> legalMoves;
-        if(isMax)
+       Set<String> legalMoves;
+        if(isMax) {
             legalMoves = game.findAvailableMoves(this);
-        else
+        }
+        else {
             legalMoves = game.findAvailableMoves(game.players[0]);
+        }
+
+
+
 
        double bestScore = 0;
        String bestMove = null;
@@ -43,40 +50,52 @@ public class AI extends Player {
 
         else{
           if (isMax) {
-              bestScore = Double.NEGATIVE_INFINITY;
+              bestScore = alpha;
               for (var possibleMove : legalMoves) {
                   game.makeMove(possibleMove, this);
 
                   if(possibleMove.startsWith("2"))
                       this.walls++;
 
-                  var eval = miniMax(depth - 1, false);
+                  var eval = miniMax(depth - 1, alpha , beta , false);
+
+                  game.undo();
                   eval[0] = possibleMove;
 
-                  if (Double.parseDouble(eval[1]) > bestScore) {
-                      bestScore = Double.parseDouble(eval[1]);
+                  if (Double.parseDouble(eval[1]) > alpha) {
+                      alpha = Double.parseDouble(eval[1]);
                       bestMove = eval[0];
+                      bestScore = alpha;
                   }
-                  game.undo();
+                  if(alpha >= beta)
+                      break;
+
+
               }
 
           }
 
           else{
-              bestScore = Double.POSITIVE_INFINITY;
+              bestScore = beta;
               for (var possibleMove : legalMoves){
                   game.makeMove(possibleMove, game.players[0]);
 
                   if(possibleMove.startsWith("2"))
                       game.players[0].walls++;
 
-                  var eval = miniMax(depth - 1 , true);
-                  eval[0] = possibleMove;
-                  if (Double.parseDouble(eval[1]) < bestScore) {
-                      bestScore = Double.parseDouble(eval[1]);
-                      bestMove = eval[0];
-                  }
+                  var eval = miniMax(depth - 1 , alpha , beta , true);
+
                   game.undo();
+                  eval[0] = possibleMove;
+                  if (Double.parseDouble(eval[1]) < beta) {
+                      beta = Double.parseDouble(eval[1]);
+                      bestMove = eval[0];
+                      bestScore = beta;
+                  }
+                  if(alpha >= beta)
+                      break;
+
+
 
               }
           }
@@ -86,6 +105,8 @@ public class AI extends Player {
        return new String[]{bestMove, bestScore + ""};
 
     }
+
+
 
 
     public double eval(Quoridor state){
@@ -101,6 +122,8 @@ public class AI extends Player {
 
        return 1*man + 1*opponentMan + 2*oppDist;
     }
+
+
 
 
 
