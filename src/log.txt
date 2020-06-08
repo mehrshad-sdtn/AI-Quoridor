@@ -23,5 +23,49 @@ for (int i = 0; i <17 ; i++) {
                                                                     for (int v = 0; v <17 ; v++) {
                                                                         System.out.print(copy[u][v]);
                                                                     }
-                                                                    System.out.println();
-                                                                }
+                                                                    System.out.println();}
+ ///------------------------------------------------------------------------------------------------ai code
+
+       counter++;
+        String[] best = new String[2];
+        String[] simScore ;
+        if(depth == 0){
+           return new String[]{" ", eval(game)+""};
+        }
+        if(isMax){
+           best[0] = "";
+           best[1] =  Double.NEGATIVE_INFINITY+"";
+
+            for (var possibleMove : game.availableMoves) {
+
+               game.makeMove(possibleMove , game.players[1]);
+              simScore = this.miniMax(depth - 1 ,false);
+              simScore[0] = possibleMove;
+
+                if(Double.parseDouble(simScore[1]) > Double.parseDouble(best[1])){
+                    best[1] = simScore[1];
+                    best[0] = simScore[0];
+                }
+              game.undo();
+            }
+
+        }
+        else{
+            best[0] = "";
+            best[1] =  Double.POSITIVE_INFINITY+"";
+            for (var possibleMove : game.availableMoves) {
+                game.makeMove(possibleMove , game.players[0]);
+                simScore = this.miniMax(depth - 1 ,true);
+                simScore[0] = possibleMove;
+
+
+                if(Double.parseDouble(simScore[1]) < Double.parseDouble(best[1])){
+                    best[1] = simScore[1];
+                    best[0] = simScore[0];
+                }
+                game.undo();
+
+            }
+
+        }
+        return best;

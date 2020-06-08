@@ -5,6 +5,7 @@ public abstract class Player {
     int x,y;
     int goal;
     int walls;
+    boolean turn;
 
 
     public Player(char pawn) {

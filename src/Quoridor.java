@@ -8,12 +8,14 @@ public class Quoridor {
     Stack<char[][]> memory;
     boolean trapped;
     boolean possible;
+    boolean simulating;
 
 
     public Quoridor(Player p1 , Player p2) {
         this.board = new char[17][17];
         this.players = new Player[2];
         this.memory = new Stack<>();
+
         this.gameOver = false;
 
         players[0] = p1;
@@ -26,6 +28,8 @@ public class Quoridor {
 
         players[0].setWallLimit(10);
         players[1].setWallLimit(10);
+        players[0].turn = true;
+        players[1].turn = false;
 
 
     }
@@ -76,19 +80,23 @@ public class Quoridor {
         System.out.println();
     }
 
-
     //-------------------------method for playing the game
     public void play(){
         String move;
 
         while(!gameOver){
 
-
             System.out.println(players[0].pawn+"'s turn , "+players[0].walls+" left");
             try{
 
-                move = players[0].getMove();
-                makeMove(move , players[0]);
+                if(players[0].turn){
+                    move = players[0].getMove();
+                    makeMove(move , players[0]);
+                    players[1].turn = true;
+                    players[0].turn = false;
+                }
+
+
 
 
             }catch(InputMismatchException ex){
@@ -105,9 +113,13 @@ public class Quoridor {
 
             System.out.println(players[1].pawn+"'s turn , "+players[1].walls+" left");
             try{
+                if(players[1].turn){
+                   move = players[1].getMove();
+                   makeMove(move , players[1]);
 
-                move = players[1].getMove();
-                makeMove(move , players[1]);
+                   players[1].turn = false;
+                   players[0].turn = true;
+                }
 
 
             }catch(InputMismatchException ex){
@@ -137,10 +149,12 @@ public class Quoridor {
                 possible = true;
                 memorize();
                 movePawn(dir , p);
+
+
             }else{
                 possible = false;
-                if(!(p instanceof AI))
-                System.err.println("illegal move");
+                if(!simulating)
+                 System.err.println("illegal move");
             }
         }
 
@@ -152,11 +166,11 @@ public class Quoridor {
                 possible = true;
                 memorize();
                 placeWall(x , y);
-                if(!(p instanceof AI))
-                p.walls--;
+                 p.walls--;
+
             }else{
                 possible = false;
-                if(!(p instanceof AI))
+              if(!simulating)
                 System.err.println("illegal wall");
             }
 
@@ -202,7 +216,6 @@ public class Quoridor {
 
         return flag;
     }
-
 
 
 
@@ -271,7 +284,6 @@ public class Quoridor {
 
     }
 
-
    //------------------------------------------------------
     private void movePawn(String dir, Player p) {
         try{
@@ -339,9 +351,6 @@ public class Quoridor {
             System.err.println("move index out of bounds");
         }
     }
-
-
-
 
 
     //choosing alternative move for collision with wall behind
@@ -417,7 +426,6 @@ public class Quoridor {
     //------------------------------------------------------
 
 
-
     private boolean allowed(String dir, Player p) {
         boolean flag = false;
 
@@ -491,6 +499,54 @@ public class Quoridor {
 
         }//outer condition brace
 
+
+    }
+
+
+    public List<String> findAvailableMoves(Player player){
+
+
+        StringBuilder move = null;
+        List<String> availableMoves = new ArrayList<>();
+
+        //----pawn
+        move = new StringBuilder("1:");
+
+        for (int dir = 0; dir < 4; dir++) {
+            if (dir == 0) move.append("up");
+            else if (dir == 1) move.append("down");
+            else if (dir == 2) move.append("right");
+            else move.append("left");
+
+            makeMove(move.toString(), player);
+            if (possible) {
+               availableMoves.add(move.toString());
+                undo();
+            }
+            move = new StringBuilder("1:");
+        }
+            //-----------wall
+
+            move = new StringBuilder("2:");
+            for (int i = 0; i < 17; i++) {
+                for (int j = 0; j < 17; j++) {
+
+
+                    if((i%2 == 0 && j%2 == 1)||(i%2 == 1 && j%2 == 0)){
+                        move.append(i).append("&").append(j);
+                        makeMove(move.toString() , player);
+                        if(possible){
+                            availableMoves.add(move.toString());
+                            undo();
+                            player.walls++;
+                        }
+                        move = new StringBuilder("2:");
+                    }
+                }
+            }
+
+
+            return availableMoves;
 
     }
 
