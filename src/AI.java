@@ -110,17 +110,16 @@ public class AI extends Player {
 
 
     public double eval(Quoridor state){
-        char[][] copy = new char[17][17];
-        for (int i = 0; i < 17; i++) {
-            System.arraycopy(state.board[i], 0, copy[i], 0, 17);
-        }
-        double man = Math.abs(9 - (state.players[1].x - state.players[1].goal)/2); //--players manhattan distance to the goal
-        double opponentMan = Math.abs((state.players[0].x - state.players[0].goal)/2); //--opponent's manhattan
-        double oppDist = 0;
+
+        double distFromGoal_ai = Math.abs(9 - (state.players[1].x - state.players[1].goal)/2);//--ai manhattan
+        double distFromGoal_human =  Math.abs((state.players[0].x - state.players[0].goal)/2); //--opponent's manhattan
+        double movesToNextRow = 9 - state.getMovesToNextRow(state.players[1]);//for ai
 
 
+        double heuristic = (1 * distFromGoal_ai)+(1.3 * distFromGoal_human)+(2 * movesToNextRow);
 
-       return 1*man + 1*opponentMan + 2*oppDist;
+
+       return heuristic;
     }
 
 

@@ -95,6 +95,7 @@ public class Quoridor {
                 if(players[0].turn){
                     move = players[0].getMove();
                     makeMove(move , players[0]);
+
                     players[1].turn = true;
                     players[0].turn = false;
                 }
@@ -119,7 +120,6 @@ public class Quoridor {
                 if(players[1].turn){
                    move = players[1].getMove();
                    makeMove(move , players[1]);
-
                    players[1].turn = false;
                    players[0].turn = true;
                 }
@@ -605,7 +605,7 @@ public class Quoridor {
             //-----------wall
 
             move = new StringBuilder("2:");
-            for (int i = 0; i < 16; i++) {
+            for (int i = 1; i < 16; i++) {
                 for (int j = 1; j < 16; j++) {
 
                     if((i%2 == 0 && j%2 == 1)||(i%2 == 1 && j%2 == 0)){
@@ -638,7 +638,7 @@ public class Quoridor {
         Iterator<String> itr = set.iterator();
 
 
-        System.out.println("before"+set.size());
+        //System.out.println("before"+set.size());
            while(itr.hasNext()) {
                String value = itr.next();
 
@@ -697,7 +697,7 @@ public class Quoridor {
         }
 
 
-        System.out.println("after"+set.size());
+        //System.out.println("after"+set.size());
 
 
     }
@@ -705,5 +705,40 @@ public class Quoridor {
 
     public static boolean inRange(int x,int y){
         return (x>=0 && y>=0) && (x<17 && y<17);
+    }
+
+    public int getMovesToNextRow(Player player) {
+        int tempX = player.x;
+        int tempY = player.y;
+
+        int rightSide = 0;
+        int leftSide = 0;
+        if(inRange(player.x - 2 , player.y)) {
+
+            while(inRange(tempX - 1 , tempY)){
+                 rightSide += 2;
+
+                 if(board[tempX - 1][tempY] == ' '){
+                     break;
+                 }
+
+                tempY+=2;
+            }
+
+            tempY = player.y;
+            while(inRange(tempX - 2 , tempY)){
+                leftSide += 2;
+
+                if(board[tempX - 1][tempY] == ' '){
+                    break;
+                }
+
+                tempY-=2;
+            }
+
+
+        }
+
+        return Math.min(leftSide , rightSide);
     }
 }
