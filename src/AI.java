@@ -12,17 +12,18 @@ public class AI extends Player {
     public void setGame(Quoridor game)
     {
         this.game = game;
-        game.simulating = true;
     }
 
 
     public String getMove() {
         var a = Double.NEGATIVE_INFINITY;
         var b = Double.POSITIVE_INFINITY;
-        String[] result = miniMax(5 , a , b , true);
+        game.simulating = true;
+        String[] result = miniMax(5, a , b , true);
 
         System.out.println(result[1]);
         System.out.println("move: "+ result[0]);
+        game.simulating = false;
         return result[0];
 
     }
@@ -40,11 +41,11 @@ public class AI extends Player {
 
 
 
-
        double bestScore = 0;
        String bestMove = null;
 
-       if (depth == 0) {
+       if (depth == 0 || this.x == this.goal
+               || game.players[0].x == game.players[0].goal) {
            bestScore = eval(game);
        }
 
@@ -96,7 +97,6 @@ public class AI extends Player {
                       break;
 
 
-
               }
           }
 
@@ -111,15 +111,25 @@ public class AI extends Player {
 
     public double eval(Quoridor state){
 
-        double distFromGoal_ai = Math.abs(9 - (state.players[1].x - state.players[1].goal)/2);//--ai manhattan
-        double distFromGoal_human =  Math.abs((state.players[0].x - state.players[0].goal)/2); //--opponent's manhattan
-        double movesToNextRow = 9 - state.getMovesToNextRow(state.players[1]);//for ai
+        Player maximizer = this;
+        Player minimizer = null;
+
+        for (var plr: state.players) {
+            if(plr.pawn != this.pawn) {
+                minimizer = plr;
+            }
+        }
 
 
-        double heuristic = (1 * distFromGoal_ai)+(1.3 * distFromGoal_human)+(2 * movesToNextRow);
+        double distFromGoal_ai = Math.abs(8 - (maximizer.x - maximizer.goal)/2); //--ai manhattan
+        assert minimizer != null;
+        double distFromGoal_human =  Math.abs((minimizer.x - minimizer.goal)/2);  //--opponent's manhattan
+        double movesToNextRow_max = 9 - state.getMovesToNextRow(maximizer , "up");   //for ai
+        double movesToNextRow_Min =  state.getMovesToNextRow(minimizer , "down");  //for opponent
 
 
-       return heuristic;
+        return (10 * distFromGoal_ai) + (2 * distFromGoal_human) +
+                (1 * movesToNextRow_max) + (5 * movesToNextRow_Min);
     }
 
 

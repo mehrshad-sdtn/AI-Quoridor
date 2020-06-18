@@ -9,6 +9,8 @@ public class Human extends Player {
     public String getMove() throws InputMismatchException {
         //gets a move and codes it in string format
 
+        //1:up
+        //2:16&5
         Scanner input = new Scanner(System.in);
         System.out.println("1. move pawn \n2. place a wall");
         int op = input.nextInt();

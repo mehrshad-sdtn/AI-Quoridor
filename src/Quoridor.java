@@ -1,7 +1,4 @@
-import javax.print.attribute.standard.MediaSize;
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class Quoridor {
     char[][] board;
@@ -108,9 +105,7 @@ public class Quoridor {
             }
 
             //win check
-            if(players[0].x == 16){
-                gameOver = true;
-                winner = players[0];
+            if(gameOver){
                 break;
             }
             printBoard();
@@ -120,7 +115,8 @@ public class Quoridor {
                 if(players[1].turn){
                    move = players[1].getMove();
                    makeMove(move , players[1]);
-                   players[1].turn = false;
+                   // System.out.println("---->"+getMovesToNextRowDown(players[1]));
+                    players[1].turn = false;
                    players[0].turn = true;
                 }
 
@@ -130,14 +126,13 @@ public class Quoridor {
             }
 
             //win check
-            if(players[1].x == 0){
-                gameOver = true;
-                winner = players[1];
-                break;
-            }
+           if(gameOver){
+               break;
+           }
             printBoard();
 
         }
+        System.out.println("final board state:");
         printBoard();//final board state
         System.out.println("player "+winner.pawn+" won");
 
@@ -152,6 +147,11 @@ public class Quoridor {
                 possible = true;
                 memorize();
                 movePawn(dir , p);
+
+                if(p.x == p.goal && !simulating){
+                    gameOver = true;
+                    winner = p;
+                }
 
 
             }else{
@@ -195,7 +195,6 @@ public class Quoridor {
            board[x][y + 2] = '#';
        }
     }
-
 
     private boolean legalWall(int x, int y) {
         boolean flag = false;
@@ -269,30 +268,37 @@ public class Quoridor {
     }
 
 
-    public void reachGoal(Player p , char[][] arr , int x , int y){
+    public void reachGoal(Player p , char[][] arr , int x , int y) {
 
-        if(x == p.goal){
+        try{
+
+        if (x == p.goal) {
             trapped = false;
 
-        }
-        else{
+        } else {
             arr[x][y] = 'x';
             if (inRange(x - 2, y)) {
                 if (arr[x - 2][y] != 'x' && arr[x - 1][y] != '#')
                     reachGoal(p, arr, x - 2, y);
 
-            }  if (inRange(x + 2, y)) {
+            }
+            if (inRange(x + 2, y)) {
                 if (arr[x + 2][y] != 'x' && arr[x + 1][y] != '#')
-                   reachGoal(p, arr, x + 2, y);
+                    reachGoal(p, arr, x + 2, y);
 
-            } if (inRange(x, y - 2)) {
+            }
+            if (inRange(x, y - 2)) {
                 if (arr[x][y - 2] != 'x' && arr[x][y - 1] != '#')
                     reachGoal(p, arr, x, y - 2);
 
-            } if (inRange(x, y + 2)) {
+            }
+            if (inRange(x, y + 2)) {
                 if (arr[x][y + 2] != 'x' && arr[x][y + 1] != '#')
                     reachGoal(p, arr, x, y + 2);
             }
+        }
+    }catch(ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
         }
 
     }
@@ -303,7 +309,6 @@ public class Quoridor {
         switch (dir) {
             case "up":
                 board[p.x][p.y] = 'o';
-
                 //collision handler
                 if(board[p.x - 2][p.y] == 'o')
                 { p.x = p.x - 2;}
@@ -439,6 +444,7 @@ public class Quoridor {
         }
         }
         else{
+            System.out.println("here");
             Random rnd = new Random();
             int choice = rnd.nextInt(2);
             if(dir.equals("up")){
@@ -510,25 +516,25 @@ public class Quoridor {
         switch (dir) {
 
             case "up":
-                if (inRange(p.x - 2, p.y)) {
+                if (inRange(p.x - 2, p.y) && inRange(p.x - 1, p.y)) {
                     if (board[p.x - 1][p.y] == ' ')
                         flag = true;
                 }
                 break;
             case "down":
-                if (inRange(p.x + 2, p.y)) {
+                if (inRange(p.x + 2, p.y) && inRange(p.x + 1, p.y)) {
                     if (board[p.x + 1][p.y] == ' ')
                         flag = true;
                 }
                 break;
             case "left":
-                if (inRange(p.x, p.y - 2)) {
+                if (inRange(p.x, p.y - 2) && inRange(p.x, p.y - 1)) {
                     if (board[p.x][p.y - 1] == ' ')
                         flag = true;
                 }
                 break;
             case "right":
-                if (inRange(p.x, p.y + 2)) {
+                if (inRange(p.x, p.y + 2) && inRange(p.x, p.y + 1)) {
                     if (board[p.x][p.y + 1] == ' ')
                         flag = true;
                 }
@@ -548,7 +554,7 @@ public class Quoridor {
         }
         memory.push(copy);
     }
-
+//undo
     public void undo(){
 
         if(!memory.isEmpty()){
@@ -576,7 +582,6 @@ public class Quoridor {
           }
 
         }//outer condition brace
-
 
     }
 
@@ -707,38 +712,93 @@ public class Quoridor {
         return (x>=0 && y>=0) && (x<17 && y<17);
     }
 
-    public int getMovesToNextRow(Player player) {
-        int tempX = player.x;
-        int tempY = player.y;
+    //---for the downside player
+    public int getMovesToNextRow(Player player , String dir) {
+        int change = 0;
 
-        int rightSide = 0;
-        int leftSide = 0;
-        if(inRange(player.x - 2 , player.y)) {
+        int pos_x = player.x;
+        int pos_y = player.y;
+        int dist = 0;
 
-            while(inRange(tempX - 1 , tempY)){
-                 rightSide += 2;
+        if (dir.equals("up")){
 
-                 if(board[tempX - 1][tempY] == ' '){
-                     break;
+          if(inRange(pos_x - 2 , pos_y)){
+              if(board[pos_x - 1][pos_y] != '#'){
+                  dist = 2;
+              }
+              else {
+                  dist = 2;
+                 while(inRange(pos_x - 2 , pos_y - 2)) {
+                     dist += 2;
+
+                     if(board[pos_x][pos_y - 1] == '#'){
+                         dist+=18;
+                         break;
+                     }
+                     pos_y = pos_y - 2;
+
+                    if(board[pos_x - 1][pos_y] != '#'){
+                        break;
+                    }
                  }
+                 int left = dist;
+                 pos_y = player.y;
+                 dist = 2;
+                 while (inRange(pos_x - 2 , pos_y + 2)){
+                     dist += 2;
 
-                tempY+=2;
-            }
+                     if(board[pos_x][pos_y + 1] == '#'){
+                         dist+=18;
+                         break;
+                     }
+                     pos_y = pos_y + 2;
 
-            tempY = player.y;
-            while(inRange(tempX - 2 , tempY)){
-                leftSide += 2;
+                     if(board[pos_x - 1][pos_y] != '#'){
+                         break;
+                     }
+                 }
+                  int right = dist;
+                 //--minimum distance
+                 dist = Math.min(right , left);
 
-                if(board[tempX - 1][tempY] == ' '){
-                    break;
-                }
-
-                tempY-=2;
-            }
-
-
+              }
+          }
         }
+        else if(dir.equals("down")){
+            if(inRange(pos_x + 2 , pos_y)){
+                if(board[pos_x + 1][pos_y] != '#'){
+                    dist += 2;
+                }
+                else{
+                    dist = 2;
+                    while(inRange(pos_x + 2 , pos_y - 2)) {
+                        dist += 2;
+                        pos_y = pos_y - 2;
 
-        return Math.min(leftSide , rightSide);
+                        if(board[pos_x + 1][pos_y] != '#'){
+                            break;
+                        }
+                    }
+                    int left = dist;
+                    pos_y = player.y;
+                    dist = 2;
+                    while (inRange(pos_x + 2 , pos_y + 2)){
+                        dist += 2;
+                        pos_y = pos_y + 2;
+
+                        if(board[pos_x + 1][pos_y] != '#'){
+                            break;
+                        }
+                    }
+                    int right = dist;
+                    //--minimum distance
+                    dist = Math.min(right , left);
+                }
+            }
+        }
+       return dist;
     }
+
+
+
 }

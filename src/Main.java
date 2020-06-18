@@ -32,10 +32,19 @@ public class Main {
             game.printBoard();
             game.play();
         }
-        else{
+        else if(mode == 4){
             Player p1 = new RandomPlayer('A');
             Player p2 = new RandomPlayer('B');
             Quoridor game = new Quoridor(p1 , p2);
+            game.printBoard();
+            game.play();
+        }
+        else{
+            AI p1 = new AI('A');
+            AI p2 = new AI('B');
+            Quoridor game = new Quoridor(p1 , p2);
+            p2.setGame(game);
+            p1.setGame(game);
             game.printBoard();
             game.play();
         }
