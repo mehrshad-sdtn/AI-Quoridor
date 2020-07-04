@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Quoridor {
+public class Quoridor{
     char[][] board;
     Player[] players;
     boolean gameOver;
@@ -9,6 +9,10 @@ public class Quoridor {
     boolean trapped;
     boolean possible;
     boolean simulating;
+    int moveCap;
+    int moveCounter = 0;
+    boolean tieGame = false;
+    boolean inTraining = false;
 
 
     public Quoridor(Player p1 , Player p2) {
@@ -31,9 +35,17 @@ public class Quoridor {
         players[0].turn = true;
         players[1].turn = false;
 
+    }
 
+    public Quoridor() {
     }
     //----------------------------------------
+
+    public void setMoveCap(int moveCap) {
+        this.moveCap = moveCap;
+    }
+
+    //---------------------------------------
     public void  makeBoard(){
         for (int i = 0; i < 17; i++) {
             for (int j = 0; j < 17; j++) {
@@ -86,13 +98,20 @@ public class Quoridor {
 
         while(!gameOver){
 
+            //----puts a limit to the number of moves for ai vs ai
+            if(moveCounter >= moveCap){
+                System.out.println("move limit reached");
+                tieGame = true;
+                break;
+            }
+
             System.out.println(players[0].pawn+"'s turn , "+players[0].walls+" left");
             try{
 
                 if(players[0].turn){
                     move = players[0].getMove();
                     makeMove(move , players[0]);
-
+                  // System.out.println("---->"+getMovesToNextRow(players[0], "down"));
                     players[1].turn = true;
                     players[0].turn = false;
                 }
@@ -115,9 +134,9 @@ public class Quoridor {
                 if(players[1].turn){
                    move = players[1].getMove();
                    makeMove(move , players[1]);
-                   // System.out.println("---->"+getMovesToNextRowDown(players[1]));
+               //  System.out.println("---->"+getMovesToNextRow(players[1], "up"));
                     players[1].turn = false;
-                   players[0].turn = true;
+                    players[0].turn = true;
                 }
 
 
@@ -134,49 +153,55 @@ public class Quoridor {
         }
         System.out.println("final board state:");
         printBoard();//final board state
+        if(winner != null)
         System.out.println("player "+winner.pawn+" won");
+        else
+            System.out.println("tie game");
 
     }
     ///-------------------------------------------------
     public void makeMove(String move , Player p){
-        String[] arr = move.split(":"); // decodes the move
+        if(move == null){move = "1:right";}
+        try {
+            String[] arr = move.split(":"); // decodes the move
 
-        if(arr[0].equals("1")){
-            String dir = arr[1].trim();
-            if(allowed(dir , p)){
-                possible = true;
-                memorize();
-                movePawn(dir , p);
+            if (arr[0].equals("1")) {
+                String dir = arr[1].trim();
+                if (allowed(dir, p)) {
+                    possible = true;
+                    memorize();
+                    movePawn(dir, p);
 
-                if(p.x == p.goal && !simulating){
-                    gameOver = true;
-                    winner = p;
+                    if (p.x == p.goal && !simulating) {
+                        gameOver = true;
+                        winner = p;
+                    }
+
+
+                } else {
+                    possible = false;
+                    if (!simulating)
+                        System.err.println("illegal move");
+                }
+            } else if (arr[0].equals("2")) {
+                String[] str = arr[1].trim().split("&");
+                int x = Integer.parseInt(str[0]);
+                int y = Integer.parseInt(str[1]);
+                if (legalWall(x, y) && p.walls > 0) {
+                    possible = true;
+                    memorize();
+                    placeWall(x, y);
+                    p.walls--;
+
+                } else {
+                    possible = false;
+                    if (!simulating)
+                        System.err.println("illegal wall");
                 }
 
-
-            }else{
-                possible = false;
-                if(!simulating)
-                 System.err.println("illegal move");
             }
-        }
-
-        else if(arr[0].equals("2")){
-            String[] str = arr[1].trim().split("&");
-            int x = Integer.parseInt(str[0]);
-            int y = Integer.parseInt(str[1]);
-            if(legalWall(x , y) && p.walls > 0){
-                possible = true;
-                memorize();
-                placeWall(x , y);
-                 p.walls--;
-
-            }else{
-                possible = false;
-              if(!simulating)
-                System.err.println("illegal wall");
-            }
-
+        }catch (NullPointerException e){
+            System.err.println("null move");
         }
 
     }
@@ -298,7 +323,8 @@ public class Quoridor {
             }
         }
     }catch(ArrayIndexOutOfBoundsException e){
-            e.printStackTrace();
+            if(!simulating)
+            {e.printStackTrace();}
         }
 
     }
@@ -375,7 +401,7 @@ public class Quoridor {
     private void alternateMove(Player p , String dir) {
         Scanner input = new Scanner(System.in);
 
-        if(!simulating){
+        if(!simulating && !inTraining){
             String alt;
            if(dir.equals("up")){
             System.out.println("the move is unavailable select an alternate [upleft / upright]");
@@ -444,7 +470,6 @@ public class Quoridor {
         }
         }
         else{
-            System.out.println("here");
             Random rnd = new Random();
             int choice = rnd.nextInt(2);
             if(dir.equals("up")){
@@ -611,7 +636,7 @@ public class Quoridor {
 
             move = new StringBuilder("2:");
             for (int i = 1; i < 16; i++) {
-                for (int j = 1; j < 16; j++) {
+                for (int j = 0; j < 16; j++) {
 
                     if((i%2 == 0 && j%2 == 1)||(i%2 == 1 && j%2 == 0)){
                         move.append(i).append("&").append(j);
@@ -647,44 +672,49 @@ public class Quoridor {
            while(itr.hasNext()) {
                String value = itr.next();
 
-               if(player instanceof AI){
+               //--removes states where a wall is placed behind the opponent
+               if(player.goal == 0){
                   if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) < other.x)
                     {
 
                         itr.remove();
 
                     }
-                 /* if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) == player.x - 1)
-                  {
-                      itr.remove();
 
-                  }*/
 
                }
-               if(player instanceof Human){
+               if(player.goal == 16){
                    if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) > other.x)
                    {
                        itr.remove();
 
                    }
-                 /*  if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) == player.x + 1)
-                   {
-                       itr.remove();
 
-                   }*/
                }
 
 
            }
 
-
+           //---removes states where wall is placed beside the player
         itr = set.iterator();
         while(itr.hasNext()) {
             String value = itr.next();
-            if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[1]) < player.y + 1 ||
-                    value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[1]) < player.y - 1)
+            if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[1]) % 2 == 1 && Integer.parseInt(value.split(":")[1].split("&")[1]) == player.y + 1 ||
+                    value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[1]) % 2 == 1 && Integer.parseInt(value.split(":")[1].split("&")[1]) == player.y - 1)
             {
 
+                itr.remove();
+
+            }
+        }
+
+        //removes wall which are far from opponent
+        itr = set.iterator();
+        while(itr.hasNext()) {
+            String value = itr.next();
+            if(value.startsWith("2") && Math.abs(Integer.parseInt(value.split(":")[1].split("&")[1]) - other.y) > 3
+                    || value.startsWith("2") && Math.abs(Integer.parseInt(value.split(":")[1].split("&")[0]) - other.x) > 4 )
+            {
                 itr.remove();
 
             }
@@ -693,13 +723,30 @@ public class Quoridor {
         itr = set.iterator();
         while(itr.hasNext()) {
             String value = itr.next();
-            if(value.startsWith("2") && Math.abs(Integer.parseInt(value.split(":")[1].split("&")[1]) - other.y) > 6
-                    || value.startsWith("2") && Math.abs(Integer.parseInt(value.split(":")[1].split("&")[0]) - other.x) > 6 )
+            if(player.goal == 0)
             {
-                itr.remove();
+                if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) % 2 == 1 &&
+                        Integer.parseInt(value.split(":")[1].split("&")[0]) < player.x)
+                {itr.remove();}
 
             }
         }
+
+        itr = set.iterator();
+        while(itr.hasNext()) {
+            String value = itr.next();
+            if(player.goal == 16)
+            {
+                if(value.startsWith("2") && Integer.parseInt(value.split(":")[1].split("&")[0]) % 2 == 1 &&
+                        Integer.parseInt(value.split(":")[1].split("&")[0]) > player.x)
+                {itr.remove();}
+
+            }
+        }
+
+
+        //-----
+
 
 
         //System.out.println("after"+set.size());
@@ -714,89 +761,64 @@ public class Quoridor {
 
     //---for the downside player
     public int getMovesToNextRow(Player player , String dir) {
-        int change = 0;
+        int x = player.x;
+        int y = player.y;
+        int left = 0;
+        int right = 0;
 
-        int pos_x = player.x;
-        int pos_y = player.y;
-        int dist = 0;
-
-        if (dir.equals("up")){
-
-          if(inRange(pos_x - 2 , pos_y)){
-              if(board[pos_x - 1][pos_y] != '#'){
-                  dist = 2;
-              }
-              else {
-                  dist = 2;
-                 while(inRange(pos_x - 2 , pos_y - 2)) {
-                     dist += 2;
-
-                     if(board[pos_x][pos_y - 1] == '#'){
-                         dist+=18;
-                         break;
-                     }
-                     pos_y = pos_y - 2;
-
-                    if(board[pos_x - 1][pos_y] != '#'){
-                        break;
-                    }
-                 }
-                 int left = dist;
-                 pos_y = player.y;
-                 dist = 2;
-                 while (inRange(pos_x - 2 , pos_y + 2)){
-                     dist += 2;
-
-                     if(board[pos_x][pos_y + 1] == '#'){
-                         dist+=18;
-                         break;
-                     }
-                     pos_y = pos_y + 2;
-
-                     if(board[pos_x - 1][pos_y] != '#'){
-                         break;
-                     }
-                 }
-                  int right = dist;
-                 //--minimum distance
-                 dist = Math.min(right , left);
-
-              }
-          }
+        int dif = 0;
+        if(dir.equals("up")){
+             dif = -1;
         }
         else if(dir.equals("down")){
-            if(inRange(pos_x + 2 , pos_y)){
-                if(board[pos_x + 1][pos_y] != '#'){
-                    dist += 2;
+             dif = +1;
+        }
+
+            while(inRange(x + dif , y)){
+
+              if(board[x + dif][y] != '#'){
+                break;
+              }
+              else if(inRange(x , y - 2)){
+                  if(board[x][y - 1] != '#')
+                  {
+                      //if doesn't hit the wall
+                      left++ ;  y = y - 2 ;
+                  }
+                  else { left = 20; break; }
+              }
+              else if (!inRange(x , y - 2)){
+                  //hits the borders
+                  left = 20;
+                  break;
+              }
+
+            }
+            x = player.x;
+            y = player.y;
+
+            while (inRange(x + dif , y)){
+                if(board[x + dif][y] != '#'){
+                    break;
                 }
-                else{
-                    dist = 2;
-                    while(inRange(pos_x + 2 , pos_y - 2)) {
-                        dist += 2;
-                        pos_y = pos_y - 2;
-
-                        if(board[pos_x + 1][pos_y] != '#'){
-                            break;
-                        }
+                else if(inRange(x , y + 2)){
+                    if(board[x][y + 1] != '#')
+                    {
+                        //if doesn't hit the wall
+                        right++ ;  y = y + 2 ;
                     }
-                    int left = dist;
-                    pos_y = player.y;
-                    dist = 2;
-                    while (inRange(pos_x + 2 , pos_y + 2)){
-                        dist += 2;
-                        pos_y = pos_y + 2;
-
-                        if(board[pos_x + 1][pos_y] != '#'){
-                            break;
-                        }
-                    }
-                    int right = dist;
-                    //--minimum distance
-                    dist = Math.min(right , left);
+                    else { right = 20; break; }
+                }
+                else if (!inRange(x , y + 2)){
+                    //hits the borders
+                    right = 20;
+                    break;
                 }
             }
-        }
-       return dist;
+
+
+        return Math.min(left , right);
+
     }
 
 

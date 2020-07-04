@@ -2,7 +2,9 @@ import java.util.*;
 
 public class AI extends Player {
     Quoridor game;
+    double[] chromosome;
     static int counter = 0;
+
 
     public AI(char pawn) {
         super(pawn);
@@ -13,17 +15,23 @@ public class AI extends Player {
     {
         this.game = game;
     }
+    public void setChromosome(double[] chromosome){
+        this.chromosome = chromosome;
+    }
 
 
     public String getMove() {
+        game.moveCounter++;
+
         var a = Double.NEGATIVE_INFINITY;
         var b = Double.POSITIVE_INFINITY;
         game.simulating = true;
-        String[] result = miniMax(5, a , b , true);
+        String[] result = miniMax(4, a , b , true);
 
         System.out.println(result[1]);
         System.out.println("move: "+ result[0]);
-        game.simulating = false;
+         game.simulating = false;
+
         return result[0];
 
     }
@@ -31,12 +39,21 @@ public class AI extends Player {
     //[0]: move //[1]:score
    public String[] miniMax(int depth ,double alpha , double beta , boolean isMax) {
 
+       Player maximizer = this;
+       Player minimizer = null;
+
+       for (var plr: game.players) {
+           if(plr.pawn != this.pawn) {
+               minimizer = plr;
+           }
+       }
+
        Set<String> legalMoves;
         if(isMax) {
-            legalMoves = game.findAvailableMoves(this);
+            legalMoves = game.findAvailableMoves(maximizer);
         }
         else {
-            legalMoves = game.findAvailableMoves(game.players[0]);
+            legalMoves = game.findAvailableMoves(minimizer);
         }
 
 
@@ -44,8 +61,9 @@ public class AI extends Player {
        double bestScore = 0;
        String bestMove = null;
 
-       if (depth == 0 || this.x == this.goal
-               || game.players[0].x == game.players[0].goal) {
+       assert minimizer != null;
+       if (depth == 0 || maximizer.x == maximizer.goal
+               || minimizer.x == minimizer.goal) {
            bestScore = eval(game);
        }
 
@@ -53,10 +71,10 @@ public class AI extends Player {
           if (isMax) {
               bestScore = alpha;
               for (var possibleMove : legalMoves) {
-                  game.makeMove(possibleMove, this);
+                  game.makeMove(possibleMove, maximizer);
 
                   if(possibleMove.startsWith("2"))
-                      this.walls++;
+                      maximizer.walls++;
 
                   var eval = miniMax(depth - 1, alpha , beta , false);
 
@@ -79,10 +97,10 @@ public class AI extends Player {
           else{
               bestScore = beta;
               for (var possibleMove : legalMoves){
-                  game.makeMove(possibleMove, game.players[0]);
+                  game.makeMove(possibleMove, minimizer);
 
                   if(possibleMove.startsWith("2"))
-                      game.players[0].walls++;
+                      minimizer.walls++;
 
                   var eval = miniMax(depth - 1 , alpha , beta , true);
 
@@ -107,8 +125,6 @@ public class AI extends Player {
     }
 
 
-
-
     public double eval(Quoridor state){
 
         Player maximizer = this;
@@ -120,17 +136,32 @@ public class AI extends Player {
             }
         }
 
-
-        double distFromGoal_ai = Math.abs(8 - (maximizer.x - maximizer.goal)/2); //--ai manhattan
+        double distFromGoal_max = 9 - Math.abs((maximizer.x - maximizer.goal)/2); //--this player's manhattan
         assert minimizer != null;
-        double distFromGoal_human =  Math.abs((minimizer.x - minimizer.goal)/2);  //--opponent's manhattan
-        double movesToNextRow_max = 9 - state.getMovesToNextRow(maximizer , "up");   //for ai
-        double movesToNextRow_Min =  state.getMovesToNextRow(minimizer , "down");  //for opponent
+        double distFromGoal_min =  Math.abs((minimizer.x - minimizer.goal)/2);  //--opponent's manhattan
+
+        double movesToNextRow_max = 0;//for this player
+        double movesToNextRow_min = 0; //for opponent
+
+        if(maximizer.goal == 0)
+        {
+            movesToNextRow_max = 9 - state.getMovesToNextRow(maximizer , "up");
+            movesToNextRow_min =  state.getMovesToNextRow(minimizer , "down");
+        }
+        else if(minimizer.goal == 16)
+        {
+            movesToNextRow_max = 9 - state.getMovesToNextRow(maximizer , "down");
+            movesToNextRow_min =  state.getMovesToNextRow(minimizer , "up");
+        }
 
 
-        return (10 * distFromGoal_ai) + (2 * distFromGoal_human) +
-                (1 * movesToNextRow_max) + (5 * movesToNextRow_Min);
+
+
+
+        return (chromosome[0] * distFromGoal_max) + (chromosome[1] * distFromGoal_min)
+               + (chromosome[2] * movesToNextRow_max) + (chromosome[3] * movesToNextRow_min);
     }
+
 
 
 
