@@ -1,19 +1,15 @@
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Stack;
-
+import java.util.*;
 public class Genetic {
   double[][] population;
   int[] fitness;
-  final int size = 8; //---population size
+  final int size = 7; //---population size
   int limit; //---number of generations
   static double[] bestRace; //----the best chromosome resulted from genetic algorithm
 
 
     public Genetic(int limit) {
         this.population = new double[size][4];
-        this.fitness = new int[size];
+        this.fitness = new int[size]; //fitness number for chromosome in the population
         this.limit = limit;
     }
     public void populate(){
@@ -24,7 +20,6 @@ public class Genetic {
                 this.population[i][j] = rand.nextInt(80);
             }
 
-
         }
     }
 
@@ -33,9 +28,8 @@ public class Genetic {
     }
 
     //------plays every twp player and fills the corresponding fitness function based on the number of wins
-    public void playOff(){
+    public void playOff() throws Exception {
         resetFitness();
-        System.out.println("here");
         AI agent1 = new AI('A');
         AI agent2 = new AI('B');
         Quoridor game = null;
@@ -56,7 +50,7 @@ public class Genetic {
                         AI winner = (AI) game.winner;
                         if (Arrays.equals(winner.chromosome, population[i]))
                             fitness[i]++;
-                        else if (Arrays.equals(winner.chromosome, population[i]))
+                        else if (Arrays.equals(winner.chromosome, population[j]))
                             fitness[j]++;
                     }
                 }
@@ -133,13 +127,13 @@ public class Genetic {
 
     }
 
-    public double[] findBestChromosome(){
+    public double[] findBestChromosome(int evolutionNumber) throws Exception {
         int c = 0;
         for (int i = 0; i < limit; i++) {
             c++;
             System.err.println("generation"+(i+1));
             playOff();
-            evolution(4);
+            evolution(evolutionNumber); //----->( num * (num - 1) ) / 2  must be smaller than the population size
         }
         playOff();
         int temp = largestIndex(fitness);
@@ -182,14 +176,26 @@ public class Genetic {
     }
 
 
+
 }
 
 
 class training{
-    public static void main(String[] args) {
-        Genetic genetic = new Genetic(7);
+    public static void main(String[] args) throws Exception {
+        Scanner input = new Scanner(System.in);
+        //--------------------------------------------
+        System.out.println("how many generations?");
+        int generationLimit = input.nextInt();
+        Genetic genetic = new Genetic(generationLimit);
         genetic.populate();
-        Genetic.bestRace = genetic.findBestChromosome();
+
+
+        System.out.println("enter the evolution number \n" +
+                "(the number of new generation members which replaces the previous generation = \n" +
+                "(evolution number) * (evolution number - 1) / 2)");
+
+        int evolutionNumber = input.nextInt();
+        Genetic.bestRace = genetic.findBestChromosome(evolutionNumber);
         //----copy these numbers in AI chromosome
         for (var value : Genetic.bestRace) {
             System.out.print(value+", ");
